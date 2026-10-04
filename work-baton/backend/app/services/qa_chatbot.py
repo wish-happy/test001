@@ -138,14 +138,14 @@ class HybridSearchEngine:
             if ks > 0: scores[i] += 0.2 * min(1.0, ks / 10)
 
         ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        results = [dict(**self.docs[i], relevance_score=round(s, 3)) for i, s in ranked[:top_k] if s > 0]
+        results = [{**{k:v for k,v in self.docs[i].items() if k != 'relevance_score'}, 'relevance_score': round(s, 3)} for i, s in ranked[:top_k] if s > 0]
 
         # ★ 핵심: 연락처/인사 문서 강제 포함
         if include_contacts and self.contact_docs:
             existing_files = {r["filename"] for r in results}
             for cd in self.contact_docs:
                 if cd["filename"] not in existing_files:
-                    results.append(dict(**cd, relevance_score=0.1))
+                    results.append({**{k:v for k,v in cd.items() if k != 'relevance_score'}, 'relevance_score': 0.1})
 
         return results if results else self.docs[:top_k]
 
@@ -333,7 +333,7 @@ class QAChatbot:
         if any(k in question for k in ['내선', '번호', '연락', '전화', '담당자', '누구']):
             for cd in self.search_engine.contact_docs:
                 if cd["filename"] not in all_docs:
-                    all_docs[cd["filename"]] = dict(**cd, relevance_score=0.15)
+                    all_docs[cd['filename']] = {**{k:v for k,v in cd.items() if k != 'relevance_score'}, 'relevance_score': 0.15}
 
         ranked = sorted(all_docs.values(), key=lambda x: x.get("relevance_score", 0), reverse=True)
         return ranked[:top_k]
