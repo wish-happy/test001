@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import FileUpload from './components/FileUpload';
 import ClassifyResult from './components/ClassifyResult';
-import StakeholderMap from './components/StakeholderMap';
+import WorkGraph from './components/WorkGraph';
 import Interview from './components/Interview';
 import WorkCalendar from './components/WorkCalendar';
 import HandoverDoc from './components/HandoverDoc';
@@ -14,7 +14,7 @@ import {
 } from './api/client';
 import './index.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const TABS = [
   { id: 'graph', label: '🔗 관계도', step: 3 },
@@ -36,28 +36,6 @@ export default function App() {
   const [interviewData, setInterviewData] = useState(null);
   const [calendarData, setCalendarData] = useState(null);
   const [handoverMd, setHandoverMd] = useState(null);
-  
-  const handleReclassify = (fromCatId, fileIdx, toCatId) => {
-    if (!toCatId || !classifyData) return;
-    const updated = { ...classifyData };
-    const cats = [...updated.categories];
-    const fromCat = cats.find(c => c.id === fromCatId);
-    if (!fromCat || !fromCat.files[fileIdx]) return;
-    const [movedFile] = fromCat.files.splice(fileIdx, 1);
-    fromCat.file_count = fromCat.files.length;
-    let toCat = cats.find(c => c.id === toCatId);
-    if (!toCat) {
-      toCat = { id: toCatId, name: '공통/참조 문서', description: '', cycle_type: '상시', files: [], file_count: 0 };
-      cats.push(toCat);
-    }
-    toCat.files.push(movedFile);
-    toCat.file_count = toCat.files.length;
-    updated.categories = cats.filter(c => c.files.length > 0);
-    updated.stats = { ...updated.stats, total_categories: updated.categories.length };
-    setClassifyData(updated);
-  };
-
-const [darkMode, setDarkMode] = useState(false);
   const [activeTab, setActiveTab] = useState('graph');
   const [apiKey, setApiKey] = useState('');
   const [showSettings, setShowSettings] = useState(false);
@@ -74,7 +52,7 @@ const [darkMode, setDarkMode] = useState(false);
       setParseResult(pRes); setStep(2);
 
       setLoadingPhase('classify');
-      const cRes = await classifyFiles(upRes.session_id, 'gemini', apiKey);
+      const cRes = await classifyFiles(upRes.session_id, 'groq', apiKey);
       setClassifyResult(cRes); setStep(3); setActiveTab('graph');
     } catch (err) {
       setError(err.response?.data?.detail || err.message);
@@ -123,8 +101,8 @@ const [darkMode, setDarkMode] = useState(false);
     <div style={{ minHeight: '100vh', background: '#f3f4f6' }}>
       {/* ─── 헤더 ─── */}
       <header style={{
-        background: 'white', borderBottom: '1px solid #e2e8f0',
-        color: '#1e293b', padding: '20px 20px 0',
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
+        color: 'white', padding: '20px 20px 0',
       }}>
         <div style={{ maxWidth: 960, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -135,16 +113,16 @@ const [darkMode, setDarkMode] = useState(false);
               </p>
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
-              <button onClick={() => setDarkMode(d => !d)}
-                style={{ padding: '5px 10px', background: darkMode ? '#334155' : '#f1f5f9',
-                  border: '1px solid #e2e8f0', borderRadius: 6, fontSize: 16, cursor: 'pointer' }}>
-                {darkMode ? '☀️' : '🌙'}
+              <button onClick={() => setShowSettings(!showSettings)}
+                style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.15)', color: 'white',
+                  border: '1px solid rgba(255,255,255,0.3)', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>
+                ⚙️
               </button>
               {step > 1 && (
                 <button onClick={handleReset}
-                  style={{ padding: '5px 10px', background: '#f1f5f9',
-                    border: '1px solid #e2e8f0', borderRadius: 6, fontSize: 12, cursor: 'pointer', color: '#64748b' }}>
-                  초기화
+                  style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.15)', color: 'white',
+                    border: '1px solid rgba(255,255,255,0.3)', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>
+                  🔄
                 </button>
               )}
             </div>
@@ -166,8 +144,8 @@ const [darkMode, setDarkMode] = useState(false);
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   style={{
                     padding: '8px 14px', fontSize: 13, fontWeight: activeTab === tab.id ? 600 : 400,
-                    background: activeTab === tab.id ? '#eef2ff' : 'transparent',
-                    color: activeTab === tab.id ? '#4f46e5' : '#64748b',
+                    background: activeTab === tab.id ? 'white' : 'transparent',
+                    color: activeTab === tab.id ? '#1e3a5f' : 'rgba(255,255,255,0.7)',
                     border: 'none', borderRadius: '8px 8px 0 0', cursor: 'pointer',
                   }}>
                   {tab.label}
@@ -202,12 +180,12 @@ const [darkMode, setDarkMode] = useState(false);
               <div>
                 <div style={{ padding: 20, background: 'white', borderRadius: 12,
                   border: '1px solid #e5e7eb', marginBottom: 16 }}>
-                  <StakeholderMap categories={classifyResult.categories} relations={classifyResult.relations} />
+                  <WorkGraph categories={classifyResult.categories} relations={classifyResult.relations} />
                 </div>
                 {step === 3 && (
                   <div style={{ textAlign: 'center' }}>
                     <button onClick={handleInterview}
-                      style={{ padding: '12px 32px', background: '#2563eb', color: '#1e293b',
+                      style={{ padding: '12px 32px', background: '#2563eb', color: 'white',
                         border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
                       🎤 다음: 커버리지 분석 & 전임자 인터뷰
                     </button>
@@ -226,7 +204,7 @@ const [darkMode, setDarkMode] = useState(false);
 
             {activeTab === 'handover' && handoverMd && (
               <div>
-                <HandoverDoc markdown={handoverMd} sessionId={sessionId} />
+                <HandoverDoc markdown={handoverMd} />
                 {/* 내보내기 버튼 */}
                 <div style={{
                   display: 'flex', gap: 10, justifyContent: 'center',
@@ -234,12 +212,12 @@ const [darkMode, setDarkMode] = useState(false);
                   borderRadius: 12, border: '1px solid #e5e7eb',
                 }}>
                   <button onClick={() => handleExport('docx')}
-                    style={{ padding: '10px 24px', background: '#2563eb', color: '#1e293b',
+                    style={{ padding: '10px 24px', background: '#2563eb', color: 'white',
                       border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                     📄 Word(.docx) 다운로드
                   </button>
                   <button onClick={() => handleExport('pdf')}
-                    style={{ padding: '10px 24px', background: '#7c3aed', color: '#1e293b',
+                    style={{ padding: '10px 24px', background: '#7c3aed', color: 'white',
                       border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                     📕 PDF 다운로드
                   </button>

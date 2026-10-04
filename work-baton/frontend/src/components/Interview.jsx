@@ -24,7 +24,7 @@ function Stepper({ checklist }) {
             <div style={{ width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, background: '#4f46e5', color: 'white', flexShrink: 0 }}>{day}</div>
             {idx < days.length - 1 && <div style={{ flex: 1, height: 2, background: '#e2e8f0' }} />}
           </div>
-          {items.map((item, i) => <div key={i} style={{ fontSize: 11, color: '#475569', padding: '1px 4px', lineHeight: 1.4 }}>☐ {item}</div>)}
+          {items.map((item, i) => <div key={i} style={{ fontSize: 11, color: '#475569', padding: '1px 4px', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150 }}>☐ {item}</div>)}
         </div>
       ))}
     </div>
