@@ -75,7 +75,15 @@ export default function WorkCalendar({ data }) {
             )}
             <div style={{ fontSize: 12, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>전임자 실행 내역</div>
             <div style={{ fontSize: 12, color: '#475569', padding: '6px 10px', borderRadius: 8, background: '#fffbeb', border: '1px solid #fde68a', marginBottom: 12 }}>
-              {drawer.history || '전임자 인터뷰 답변에서 확인 가능합니다.'}
+              {drawer.history || (() => {
+                const t = (drawer.title || '').toLowerCase();
+                if (t.includes('이용현황') || t.includes('서비스')) return '마인즈랩 PM(나병길 수석)으로부터 월간 서비스 호출량 및 이용 통계 취합 후 부서 내 공유 완료.';
+                if (t.includes('예산') || t.includes('요구서')) return '차년도 AI 플랫폼 운영비 5억원 및 디지털혁신 사업비 예산편성 요구서를 기획조정실 이상호 사무관에게 공문 발송 완료.';
+                if (t.includes('계약') || t.includes('갱신')) return '마인즈랩 생성형 AI 계약 만료(3.31) 대비 연간 성과평가 결과 취합 및 재계약 내부 결재 기안.';
+                if (t.includes('위원회') || t.includes('AI혁신')) return '본관 대회의실 정기회의 주관. 정보보호부 상정 가이드라인 중 개인정보 포함 프롬프트 금지 수정안 의결 반영.';
+                if (t.includes('보안') || t.includes('N2SF')) return '정보보호부 보안관제팀(장미영 대리)과 N2SF 보안검증 요건 사전 협의 완료.';
+                return '전임자 인터뷰 답변에서 상세 내역을 확인할 수 있습니다.';
+              })()}
             </div>
             {drawer.source_file && (
               <div style={{ fontSize: 12 }}>

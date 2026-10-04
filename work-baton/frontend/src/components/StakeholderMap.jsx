@@ -34,9 +34,13 @@ export default function StakeholderMap({ categories }) {
               <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, marginBottom: 10 }}>{card.description || '업무 설명 없음'}</div>
               {card.people.length > 0 && (
                 <div style={{ marginBottom: 8 }}>
-                  <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>소관 창구</div>
+                  <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>소관 부서 · 담당자</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                    {card.people.map((p, i) => <span key={i} style={{ fontSize: 12, padding: '3px 8px', borderRadius: 6, background: '#f1f5f9', color: '#334155' }}>{p}</span>)}
+                    {card.people.map((p, i) => {
+                      const isExtPerson = card.type === '외부';
+                      const prefix = isExtPerson ? '외부협력: ' : '';
+                      return <span key={i} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 8, background: isExtPerson ? '#fef3c7' : '#eef2ff', color: isExtPerson ? '#92400e' : '#3730a3', fontWeight: 500 }}>{prefix}{p}</span>;
+                    })}
                   </div>
                 </div>
               )}

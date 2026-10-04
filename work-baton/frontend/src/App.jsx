@@ -144,8 +144,8 @@ export default function App() {
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   style={{
                     padding: '8px 14px', fontSize: 13, fontWeight: activeTab === tab.id ? 600 : 400,
-                    background: activeTab === tab.id ? 'white' : 'transparent',
-                    color: activeTab === tab.id ? '#1e3a5f' : 'rgba(255,255,255,0.7)',
+                    background: activeTab === tab.id ? '#eef2ff' : 'transparent',
+                    color: activeTab === tab.id ? '#4f46e5' : '#64748b',
                     border: 'none', borderRadius: '8px 8px 0 0', cursor: 'pointer',
                   }}>
                   {tab.label}
