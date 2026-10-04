@@ -27,26 +27,8 @@ DEMO_MODE = os.getenv("DEMO_MODE", "false").lower() == "true"
 
 
 def _get_llm(preset="gemini", api_key=None, base_url=None, model=None):
-    """LLM 인스턴스 생성 — 프론트에서 키를 안 보내도 .env에서 자동 로드"""
-    if model and base_url:
-        config = LLMConfig(
-            provider="custom", model=model,
-            base_url=base_url,
-            api_key=api_key or os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY") or "",
-        )
-        return LLMAdapter(config=config)
-
-    # 프론트에서 api_key를 보내면 그걸 사용, 아니면 .env
-    if api_key:
-        config = LLMConfig(
-            provider=preset, model="gpt-4o-mini" if preset == "openai" else "llama-3.3-70b-versatile",
-            base_url="https://api.groq.com/openai/v1" if preset != "openai" else None,
-            api_key=api_key,
-        )
-        return LLMAdapter(config=config)
-
-    # 기본: 프리셋 사용 (.env에서 키 자동 로드)
-    return LLMAdapter(preset=preset)
+    """LLM 인스턴스 — 항상 Gemini 기본"""
+    return LLMAdapter()
 
 
 # ─── 1. 업로드 ───

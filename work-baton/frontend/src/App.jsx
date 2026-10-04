@@ -52,7 +52,7 @@ export default function App() {
       setParseResult(pRes); setStep(2);
 
       setLoadingPhase('classify');
-      const cRes = await classifyFiles(upRes.session_id, 'groq', apiKey);
+      const cRes = await classifyFiles(upRes.session_id, 'gemini', apiKey);
       setClassifyResult(cRes); setStep(3); setActiveTab('graph');
     } catch (err) {
       setError(err.response?.data?.detail || err.message);

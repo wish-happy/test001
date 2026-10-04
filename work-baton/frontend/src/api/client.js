@@ -16,7 +16,7 @@ export async function parseFiles(sessionId) {
   return (await api.post(`/api/baton/parse/${sessionId}`)).data;
 }
 
-export async function classifyFiles(sessionId, preset = 'groq', apiKey = '') {
+export async function classifyFiles(sessionId, preset = 'gemini', apiKey = '') {
   const fd = new FormData();
   fd.append('model_preset', preset);
   if (apiKey) fd.append('custom_api_key', apiKey);

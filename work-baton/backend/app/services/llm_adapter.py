@@ -21,7 +21,7 @@ except ImportError:
 
 class LLMConfig(BaseModel):
     provider: str = "groq"
-    model: str = "openai/gpt-oss-20b"
+    model: str = "gemini-3.1-flash-lite"
     base_url: Optional[str] = "https://api.groq.com/openai/v1"
     api_key: Optional[str] = None
     temperature: float = 0.2
@@ -32,19 +32,19 @@ class LLMConfig(BaseModel):
 MODEL_PRESETS = {
     "groq": LLMConfig(
         provider="groq",
-        model="openai/gpt-oss-20b",
+        model="gemini-3.1-flash-lite",
         base_url="https://api.groq.com/openai/v1",
         api_key=os.getenv("GROQ_API_KEY", ""),
     ),
     "groq-fast": LLMConfig(
         provider="groq",
-        model="openai/gpt-oss-20b",
+        model="gemini-3.1-flash-lite",
         base_url="https://api.groq.com/openai/v1",
         api_key=os.getenv("GROQ_API_KEY", ""),
     ),
     "gemini": LLMConfig(
         provider="gemini",
-        model="gemini-2.0-flash",
+        model="gemini-3.1-flash-lite",
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
         api_key=os.getenv("GEMINI_API_KEY", ""),
     ),
@@ -150,18 +150,29 @@ class LLMAdapter:
             base_url=self.config.base_url,
         )
 
+    FALLBACK_MODELS = ["gemini-3.1-flash-lite", "gemini-flash-lite-latest", "gemini-3-flash-preview"]
+
     def complete(self, system_prompt: str, user_prompt: str) -> str:
-        """단일 프롬프트 완성"""
-        response = self.client.chat.completions.create(
-            model=self.config.model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=self.config.temperature,
-            max_tokens=self.config.max_tokens,
-        )
-        return response.choices[0].message.content
+        """단일 프롬프트 완성 — 실패 시 다른 모델로 자동 재시도"""
+        models_to_try = [self.config.model] + [m for m in self.FALLBACK_MODELS if m != self.config.model]
+        last_error = None
+        for model in models_to_try:
+            try:
+                response = self.client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=self.config.temperature,
+                    max_tokens=self.config.max_tokens,
+                )
+                return response.choices[0].message.content
+            except Exception as e:
+                last_error = e
+                print(f"[LLM Retry] {model} 실패, 다음 모델 시도...")
+                continue
+        raise last_error
 
     def complete_json(self, system_prompt: str, user_prompt: str) -> dict:
         """JSON 응답을 안전하게 파싱하여 반환"""
