@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  work-baton:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - DEMO_MODE=${DEMO_MODE:-false}
+    volumes:
+      - ./uploads:/app/backend/uploads
+
+  # 시연용 (LLM 없이 즉시 동작)
+  work-baton-demo:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      - DEMO_MODE=true
+    profiles:
+      - demo

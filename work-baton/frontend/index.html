@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <script>
+    // 1. 오염된 스토리지 즉시 초기화
+    try { localStorage.clear(); sessionStorage.clear(); } catch(e){}
+
+    // 2. 브라우저 통신 원천 가로채기: localhost:8080 주소를 Codespaces 내부 경로로 강제 우회
+    (function() {
+      var fixUrl = function(u) {
+        if (typeof u === 'string') {
+          return u.replace(/^https?:\/\/(localhost|127\.0\.0\.1):8080/, '');
+        }
+        return u;
+      };
+      var origOpen = XMLHttpRequest.prototype.open;
+      XMLHttpRequest.prototype.open = function(method, url) {
+        var args = Array.prototype.slice.call(arguments);
+        args[1] = fixUrl(url);
+        return origOpen.apply(this, args);
+      };
+      if (window.fetch) {
+        var origFetch = window.fetch;
+        window.fetch = function(input, init) {
+          if (typeof input === 'string') {
+            input = fixUrl(input);
+          } else if (input && input.url) {
+            input = new Request(fixUrl(input.url), input);
+          }
+          return origFetch.call(this, input, init);
+        };
+      }
+    })();
+  </script>
+
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <script>try{localStorage.clear();sessionStorage.clear();}catch(e){}</script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>frontend</title>
+  </head>
+  <body>
+<div id="patch-badge" style="background:#10b981;color:white;text-align:center;font-size:12px;padding:4px;font-weight:bold;z-index:99999;">🟢 네트워크 자동 우회 패치 활성화됨</div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  
+  <script>
+    // 옛날에 저장된 localhost 주소 청소
+    try { localStorage.clear(); sessionStorage.clear(); } catch(e){}
+  </script>
+  <!-- 태블릿 화면에서 실시간 에러를 바로 볼 수 있는 모바일 개발자 도구 -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
+</body>
+
+</html>
