@@ -19,7 +19,7 @@ export default function WorkCalendar({ data }) {
           <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 4 }}>📌 이번 달 인계 타임라인</div>
           <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>{NOW}월 주요 업무</div>
           {currentMonthEvents.length > 0 ? currentMonthEvents.map((evt, i) => (
-            <div key={i} onClick={() => setDrawer(evt)} style={{
+            <div key={i} onClick={() => setDrawer({...evt, _month: month || NOW})} style={{
               display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', cursor: 'pointer',
               background: 'rgba(255,255,255,0.1)', borderRadius: 8, borderLeft: '3px solid #818cf8', marginBottom: 6,
             }}>
@@ -46,7 +46,7 @@ export default function WorkCalendar({ data }) {
                   {events.length > 0 && <span style={{ width: 18, height: 18, borderRadius: '50%', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: isCurrent ? '#4f46e5' : '#e2e8f0', color: isCurrent ? 'white' : '#64748b', fontWeight: 700 }}>{events.length}</span>}
                 </div>
                 {events.slice(0, 3).map((evt, j) => (
-                  <div key={j} onClick={() => setDrawer(evt)} style={{ fontSize: 11, color: '#475569', padding: '2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}>
+                  <div key={j} onClick={() => setDrawer({...evt, _month: month || NOW})} style={{ fontSize: 11, color: '#475569', padding: '2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}>
                     {evt.day ? evt.day + '일 ' : ''}{decodeFilename(evt.title)}
                   </div>
                 ))}
@@ -61,7 +61,7 @@ export default function WorkCalendar({ data }) {
         {drawer ? (
           <div style={{ padding: 18, borderRadius: 12, background: 'white', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.06)', position: 'sticky', top: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-              <h4 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: '#1e293b' }}>📋 업무 상세</h4>
+              <h4 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: '#1e293b' }}>📋 {drawer._month ? drawer._month + '월' : ''} 업무 상세</h4>
               <button onClick={() => setDrawer(null)} style={{ background: 'none', border: 'none', fontSize: 16, color: '#94a3b8', cursor: 'pointer' }}>✕</button>
             </div>
             <div style={{ fontSize: 15, fontWeight: 600, color: '#4f46e5', marginBottom: 8 }}>{decodeFilename(drawer.title)}</div>
@@ -95,7 +95,7 @@ export default function WorkCalendar({ data }) {
           <div style={{ padding: 16, borderRadius: 12, background: '#f8fafc', border: '1px solid #e2e8f0', position: 'sticky', top: 20 }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: '#334155', marginBottom: 12 }}>🔄 반복 루틴 업무</div>
             {routineEvents.length > 0 ? routineEvents.map((evt, i) => (
-              <div key={i} onClick={() => setDrawer(evt)} style={{ padding: '8px 10px', marginBottom: 6, borderRadius: 8, background: 'white', border: '1px solid #e2e8f0', fontSize: 13, cursor: 'pointer' }}>
+              <div key={i} onClick={() => setDrawer({...evt, _month: month || NOW})} style={{ padding: '8px 10px', marginBottom: 6, borderRadius: 8, background: 'white', border: '1px solid #e2e8f0', fontSize: 13, cursor: 'pointer' }}>
                 <div style={{ fontWeight: 500, color: '#1e293b', marginBottom: 2 }}>{decodeFilename(evt.title)}</div>
                 <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 8, background: '#e0e7ff', color: '#3730a3' }}>{evt.recurrence}</span>
               </div>

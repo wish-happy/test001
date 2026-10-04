@@ -36,6 +36,28 @@ export default function App() {
   const [interviewData, setInterviewData] = useState(null);
   const [calendarData, setCalendarData] = useState(null);
   const [handoverMd, setHandoverMd] = useState(null);
+  
+  const handleReclassify = (fromCatId, fileIdx, toCatId) => {
+    if (!toCatId || !classifyData) return;
+    const updated = { ...classifyData };
+    const cats = [...updated.categories];
+    const fromCat = cats.find(c => c.id === fromCatId);
+    if (!fromCat || !fromCat.files[fileIdx]) return;
+    const [movedFile] = fromCat.files.splice(fileIdx, 1);
+    fromCat.file_count = fromCat.files.length;
+    let toCat = cats.find(c => c.id === toCatId);
+    if (!toCat) {
+      toCat = { id: toCatId, name: '공통/참조 문서', description: '', cycle_type: '상시', files: [], file_count: 0 };
+      cats.push(toCat);
+    }
+    toCat.files.push(movedFile);
+    toCat.file_count = toCat.files.length;
+    updated.categories = cats.filter(c => c.files.length > 0);
+    updated.stats = { ...updated.stats, total_categories: updated.categories.length };
+    setClassifyData(updated);
+  };
+
+const [darkMode, setDarkMode] = useState(false);
   const [activeTab, setActiveTab] = useState('graph');
   const [apiKey, setApiKey] = useState('');
   const [showSettings, setShowSettings] = useState(false);

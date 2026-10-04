@@ -44,11 +44,11 @@ export default function StakeholderMap({ categories }) {
                   </div>
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 8, borderTop: '1px solid #f1f5f9' }}>
-                <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 6,
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, borderTop: '1px solid #f1f5f9', flexWrap: 'nowrap', gap: 8 }}>
+                <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 6, whiteSpace: 'nowrap',
                   background: card.cycle === '순기' ? '#fef3c7' : '#eef2ff', color: card.cycle === '순기' ? '#92400e' : '#3730a3' }}>
                   {card.cycle}{card.cycleDetail ? ' · ' + card.cycleDetail : ''}</span>
-                <span style={{ fontSize: 11, color: '#94a3b8' }}>📄 {card.fileCount}개</span>
+                <span style={{ fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap', flexShrink: 0 }}>📄 {card.fileCount}개</span>
               </div>
             </div>
           );
