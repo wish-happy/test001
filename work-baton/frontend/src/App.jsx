@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import FileUpload from './components/FileUpload';
 import ClassifyResult from './components/ClassifyResult';
-import WorkGraph from './components/WorkGraph';
+import StakeholderMap from './components/StakeholderMap';
 import Interview from './components/Interview';
 import WorkCalendar from './components/WorkCalendar';
 import HandoverDoc from './components/HandoverDoc';
@@ -101,8 +101,8 @@ export default function App() {
     <div style={{ minHeight: '100vh', background: '#f3f4f6' }}>
       {/* ─── 헤더 ─── */}
       <header style={{
-        background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
-        color: 'white', padding: '20px 20px 0',
+        background: 'white', borderBottom: '1px solid #e2e8f0',
+        color: '#1e293b', padding: '20px 20px 0',
       }}>
         <div style={{ maxWidth: 960, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -114,13 +114,13 @@ export default function App() {
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
               <button onClick={() => setShowSettings(!showSettings)}
-                style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.15)', color: 'white',
+                style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.15)', color: '#1e293b',
                   border: '1px solid rgba(255,255,255,0.3)', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>
                 ⚙️
               </button>
               {step > 1 && (
                 <button onClick={handleReset}
-                  style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.15)', color: 'white',
+                  style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.15)', color: '#1e293b',
                     border: '1px solid rgba(255,255,255,0.3)', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}>
                   🔄
                 </button>
@@ -180,12 +180,12 @@ export default function App() {
               <div>
                 <div style={{ padding: 20, background: 'white', borderRadius: 12,
                   border: '1px solid #e5e7eb', marginBottom: 16 }}>
-                  <WorkGraph categories={classifyResult.categories} relations={classifyResult.relations} />
+                  <StakeholderMap categories={classifyResult.categories} relations={classifyResult.relations} />
                 </div>
                 {step === 3 && (
                   <div style={{ textAlign: 'center' }}>
                     <button onClick={handleInterview}
-                      style={{ padding: '12px 32px', background: '#2563eb', color: 'white',
+                      style={{ padding: '12px 32px', background: '#2563eb', color: '#1e293b',
                         border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
                       🎤 다음: 커버리지 분석 & 전임자 인터뷰
                     </button>
@@ -212,12 +212,12 @@ export default function App() {
                   borderRadius: 12, border: '1px solid #e5e7eb',
                 }}>
                   <button onClick={() => handleExport('docx')}
-                    style={{ padding: '10px 24px', background: '#2563eb', color: 'white',
+                    style={{ padding: '10px 24px', background: '#2563eb', color: '#1e293b',
                       border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                     📄 Word(.docx) 다운로드
                   </button>
                   <button onClick={() => handleExport('pdf')}
-                    style={{ padding: '10px 24px', background: '#7c3aed', color: 'white',
+                    style={{ padding: '10px 24px', background: '#7c3aed', color: '#1e293b',
                       border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                     📕 PDF 다운로드
                   </button>
