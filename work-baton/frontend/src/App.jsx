@@ -164,7 +164,8 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', background: darkMode ? '#0f172a' : '#f3f4f6', color: darkMode ? '#e2e8f0' : '#1e293b', transition: 'all 0.3s' }}>
       {/* ─── 헤더 ─── */}
-      {step > 0 && <header style={{
+      <header style={{
+        display: step === 0 ? 'none' : 'block',
         background: darkMode ? '#1e293b' : 'white', borderBottom: '1px solid ' + (darkMode ? '#334155' : '#e2e8f0'),
         color: darkMode ? '#e2e8f0' : '#1e293b', padding: '20px 20px 0',
       }}>
@@ -226,7 +227,7 @@ export default function App() {
             </div>
           )}
         </div>
-      </header>}
+      </header>
 
       {/* ─── 메인 ─── */}
       <main style={{ maxWidth: 960, margin: '0 auto', padding: '20px 20px 60px' }}>
