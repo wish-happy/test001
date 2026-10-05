@@ -1,0 +1,217 @@
+{
+ "summary": {
+  "total_files": 4,
+  "by_extension": {
+   ".hwpx": 4
+  },
+  "total_characters": 22873,
+  "folder_structure": [],
+  "errors": []
+ },
+ "metas": [
+  {
+   "filename": "'27년 재해위험지역정비(보조，세종) 정부 예산안 보고(전자결재).hwpx",
+   "dates": [],
+   "people": [],
+   "amounts": [
+    "3,879억원",
+    "514억원",
+    "120,761백만원",
+    "1,579억원",
+    "126억원",
+    "1,157,870백만원",
+    "1,039억원",
+    "1,157,503백만원",
+    "367백만원",
+    "19,587백만원"
+   ],
+   "phones": [],
+   "emails": [],
+   "keywords": [
+    "예산"
+   ],
+   "has_schedule": false,
+   "has_budget": true,
+   "is_plan": false,
+   "is_regulation": true,
+   "is_contact": false
+  },
+  {
+   "filename": "2608007_ 국가기록원 기획전시 결과보고 최종.hwpx",
+   "dates": [
+    "2026.7.26.",
+    "2026년 7월49",
+    "2026.7.20.",
+    "2026.7.13.",
+    "2026.7.24.",
+    "2026.7.21.",
+    "2026.7.25",
+    "2026.7.22",
+    "2026년 7월48",
+    "2026.7.7.",
+    "2026.7.19",
+    "2026.7.29.",
+    "2026.7.20",
+    "2026.7.25.",
+    "2026.7.11"
+   ],
+   "people": [
+    "기록관리 위원",
+    "세계유산 위원"
+   ],
+   "amounts": [
+    "1억원",
+    "2억원",
+    "192,000,000원"
+   ],
+   "phones": [],
+   "emails": [],
+   "keywords": [
+    "위원회",
+    "예산",
+    "인사"
+   ],
+   "has_schedule": false,
+   "has_budget": true,
+   "is_plan": false,
+   "is_regulation": false,
+   "is_contact": false
+  },
+  {
+   "filename": "★ '26년 소하천 관리실태 점검 결과보고.hwpx",
+   "dates": [],
+   "people": [],
+   "amounts": [],
+   "phones": [
+    "01011627592"
+   ],
+   "emails": [],
+   "keywords": [
+    "계약",
+    "예산"
+   ],
+   "has_schedule": false,
+   "has_budget": true,
+   "is_plan": false,
+   "is_regulation": false,
+   "is_contact": false
+  },
+  {
+   "filename": "★_자전거 이용 활성화에 관한 법률 시행규칙_ 개정계획(수정).hwpx",
+   "dates": [],
+   "people": [
+    "산업통상 부장"
+   ],
+   "amounts": [
+    "500만원",
+    "50만원"
+   ],
+   "phones": [],
+   "emails": [],
+   "keywords": [],
+   "has_schedule": false,
+   "has_budget": false,
+   "is_plan": false,
+   "is_regulation": true,
+   "is_contact": false
+  }
+ ],
+ "categories": [
+  {
+   "id": "work_01",
+   "name": "재해위험지역 정비사업 예산 편성",
+   "description": "재해위험지역 정비사업의 정부 예산안을 수립하고 기획예산처와의 협의를 통해 시·도별 예산을 확정하는 업무입니다. 매년 예산 편성 일정에 따라 예산 신청, 심의, 결과 통보 과정을 거칩니다.",
+   "cycle_type": "순기",
+   "cycle_detail": "매년 8월~9월 (정부 예산안 제출 일정에 따름)",
+   "file_count": 1,
+   "files": [
+    {
+     "filename": "'27년 재해위험지역정비(보조，세종) 정부 예산안 보고(전자결재).hwpx",
+     "path": "'27년 재해위험지역정비(보조，세종) 정부 예산안 보고(전자결재).hwpx"
+    }
+   ],
+   "key_dates": [
+    {
+     "date_hint": "매년 8월",
+     "task": "시·도별 예산 신청 및 행안부 검토"
+    },
+    {
+     "date_hint": "매년 9월 3일",
+     "task": "정부 예산안 국회 제출"
+    }
+   ],
+   "related_people": [
+    "기획예산처 담당자"
+   ],
+   "related_categories": []
+  },
+  {
+   "id": "work_02",
+   "name": "국가기록원 기획전시 운영",
+   "description": "국제 행사(유네스코 세계유산위원회 등)를 계기로 국가기록원의 기록물을 홍보하기 위한 기획전시를 운영하는 업무입니다. 전시 기획, 용역 관리, 결과 보고 및 만족도 조사를 포함합니다.",
+   "cycle_type": "상시",
+   "cycle_detail": null,
+   "file_count": 1,
+   "files": [
+    {
+     "filename": "2608007_ 국가기록원 기획전시 결과보고 최종.hwpx",
+     "path": "2608007_ 국가기록원 기획전시 결과보고 최종.hwpx"
+    }
+   ],
+   "key_dates": [
+    {
+     "date_hint": "행사 종료 직후",
+     "task": "전시 결과 보고서 작성"
+    }
+   ],
+   "related_people": [
+    "전시기획팀"
+   ],
+   "related_categories": []
+  },
+  {
+   "id": "work_03",
+   "name": "소하천 관리실태 점검",
+   "description": "「소하천정비법」에 따라 전국 소하천의 관리 및 점용 상황을 점검하고 조치 결과를 보고하는 업무입니다. 매년 상반기에 점검을 실시하고 결과를 취합합니다.",
+   "cycle_type": "순기",
+   "cycle_detail": "매년 2월~6월",
+   "file_count": 1,
+   "files": [
+    {
+     "filename": "★ '26년 소하천 관리실태 점검 결과보고.hwpx",
+     "path": "★ '26년 소하천 관리실태 점검 결과보고.hwpx"
+    }
+   ],
+   "key_dates": [
+    {
+     "date_hint": "매년 4월 30일",
+     "task": "관리실태 점검 완료"
+    },
+    {
+     "date_hint": "매년 6월 30일",
+     "task": "조치 결과 제출"
+    }
+   ],
+   "related_people": [],
+   "related_categories": []
+  },
+  {
+   "id": "work_04",
+   "name": "자전거 이용 활성화 법령 개정",
+   "description": "상위 법령 개정 사항을 반영하거나 지방행정체제 개편 등 환경 변화에 따라 자전거 이용 활성화에 관한 법률 시행규칙을 개정하는 업무입니다. 안전 기준 마련 및 제도 정비를 수행합니다.",
+   "cycle_type": "상시",
+   "cycle_detail": null,
+   "file_count": 1,
+   "files": [
+    {
+     "filename": "★_자전거 이용 활성화에 관한 법률 시행규칙_ 개정계획(수정).hwpx",
+     "path": "★_자전거 이용 활성화에 관한 법률 시행규칙_ 개정계획(수정).hwpx"
+    }
+   ],
+   "key_dates": [],
+   "related_people": [],
+   "related_categories": []
+  }
+ ],
+ "relations": []
+}

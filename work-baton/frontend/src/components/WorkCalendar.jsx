@@ -35,10 +35,11 @@ export default function WorkCalendar({ data }) {
             const events = monthly[String(month)] || [];
             const isPast = month < NOW;
             const isCurrent = month === NOW;
+            const isSelected = month === selectedMonth;
             return (
               <div key={i} style={{
                 padding: 12, borderRadius: 10, minHeight: 80, cursor: 'pointer', background: 'white',
-                border: isCurrent ? '2px solid #4f46e5' : '1px solid #e2e8f0',
+                border: isSelected ? '2px solid #4f46e5' : isCurrent ? '2px solid #818cf8' : '1px solid #e2e8f0',
                 opacity: isPast ? 0.65 : 1,
                 boxShadow: isCurrent ? '0 4px 12px rgba(79,70,229,0.15)' : 'none',
               }}>

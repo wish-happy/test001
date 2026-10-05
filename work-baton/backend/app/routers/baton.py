@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 
 from ..services.file_parser import FileParser, get_folder_summary
 from ..services.meta_extractor import extract_meta_by_regex, group_files, enrich_with_llm
+from ..services.session_store import save_session, load_session, load_all_sessions
 from ..services.relation_detector import detect_relations
 from ..services.quality_checker import check_quality
 from ..services.action_planner import generate_action_plan
@@ -225,6 +226,7 @@ async def classify_files(
     sessions[session_id]["categories"] = categories
     sessions[session_id]["relations"] = relations
     sessions[session_id]["llm"] = llm
+    save_session(session_id, sessions[session_id])
 
     return {
         "session_id": session_id,
@@ -266,6 +268,7 @@ async def generate_interview(session_id: str):
         reports = interviewer.analyze_coverage(sessions[session_id]["categories"])
 
     sessions[session_id]["coverage_reports"] = reports
+    save_session(session_id, sessions[session_id])
 
     return {
         "session_id": session_id,
@@ -286,6 +289,7 @@ async def submit_interview_answers(session_id: str, answers: dict = Body(...)):
     reports = interviewer.merge_answers(sessions[session_id]["coverage_reports"], answers)
     sessions[session_id]["coverage_reports"] = reports
     sessions[session_id]["interview_answers"] = answers
+    save_session(session_id, sessions[session_id])
 
     answered = sum(1 for r in reports for q in r.questions if q.get("answered"))
     total = sum(len(r.questions) for r in reports)
@@ -315,6 +319,7 @@ async def extract_calendar(session_id: str):
     from ..services.calendar_extractor import CalendarExtractor as CE
     monthly_view = CE(LLMAdapter()).get_monthly_view(events)
     sessions[session_id]["calendar_events"] = events
+    save_session(session_id, sessions[session_id])
 
     return {
         "session_id": session_id,
@@ -343,6 +348,7 @@ async def generate_handover(session_id: str):
         )
 
     sessions[session_id]["handover_md"] = handover_md
+    save_session(session_id, sessions[session_id])
 
     return {
         "session_id": session_id,
@@ -474,6 +480,11 @@ async def get_session(session_id: str):
         result["relations"] = data.get("relations", [])
     if "handover_md" in data:
         result["has_handover"] = True
+        result["handover_markdown"] = data["handover_md"]
+    if "calendar_events" in data:
+        result["calendar"] = data["calendar_events"]
+    if "coverage_reports" in data:
+        result["interview"] = [r.to_dict() if hasattr(r, "to_dict") else r for r in data["coverage_reports"]]
     return result
 
 

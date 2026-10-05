@@ -103,7 +103,7 @@ class HybridSearchEngine:
         if self.embed_client and len(docs) <= 50:
             try:
                 texts = [(d["filename"] + " " + d["content"])[:2000] for d in docs]
-                resp = self.embed_client.embeddings.create(model="text-embedding-004", input=texts)
+                resp = self.embed_client.embeddings.create(model="text-embedding-005", input=texts)
                 self.embeddings = [e.embedding for e in resp.data]
             except Exception as e:
                 print(f"[Embed] {e}")
@@ -124,7 +124,7 @@ class HybridSearchEngine:
         # 임베딩 (0.4)
         if self.embeddings and self.embed_client:
             try:
-                q_emb = self.embed_client.embeddings.create(model="text-embedding-004", input=[query]).data[0].embedding
+                q_emb = self.embed_client.embeddings.create(model="text-embedding-005", input=[query]).data[0].embedding
                 for i, de in enumerate(self.embeddings):
                     scores[i] += 0.4 * max(0, self._cos(q_emb, de))
             except Exception:

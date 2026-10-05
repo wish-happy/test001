@@ -157,7 +157,7 @@ export default function App() {
   const progressPercent = Math.round(progressSteps.filter(s => s.done).length / progressSteps.length * 100);
 
   const SENDER_TABS = ['graph', 'classify', 'interview', 'handover', 'dashboard'];
-  const RECEIVER_TABS = ['handover', 'calendar', 'graph', 'chat', 'dashboard'];
+  const RECEIVER_TABS = ['handover', 'calendar', 'chat', 'dashboard'];
   const allowedTabs = role === 'sender' ? SENDER_TABS : role === 'receiver' ? RECEIVER_TABS : TABS.map(t => t.id);
   const visibleTabs = TABS.filter((t) => t.step <= step && allowedTabs.includes(t.id));
 
@@ -381,8 +381,9 @@ export default function App() {
                   const data = await res.json();
                   setSessionId(code);
                   if (data.categories) { setClassifyResult(data); setStep(3); }
+                  if (data.calendar) { setCalendarData(data.calendar); setStep(5); }
                   if (data.handover_markdown) { setHandoverMd(data.handover_markdown); setStep(6); setActiveTab('handover'); }
-                  else { setStep(3); setActiveTab('graph'); }
+                  if (!data.handover_markdown && !data.categories) { throw new Error('전임자가 아직 인수인계를 완료하지 않았습니다'); }
                 } catch (e) { alert(e.message); }
                 finally { setLoading(false); }
               }}
@@ -418,7 +419,7 @@ export default function App() {
                   border: '1px solid ' + (darkMode ? '#334155' : '#e5e7eb'), marginBottom: 16 }}>
                   <StakeholderMap categories={classifyResult.categories} relations={classifyResult.relations} />
                 </div>
-                {step === 3 && (
+                {step === 3 && role === 'sender' && (
                   <div style={{ textAlign: 'center' }}>
                     <button onClick={handleInterview}
                       style={{ padding: '12px 32px', background: '#2563eb', color: 'white',
@@ -440,8 +441,8 @@ export default function App() {
 
             {activeTab === 'handover' && handoverMd && (
               <div>
-                {/* 완료 축하 배너 */}
-                <div style={{
+                {/* 완료 축하 배너 — 전임자만 */}
+                {role === 'sender' && <div style={{
                   background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                   borderRadius: 16, padding: 24, color: 'white', marginBottom: 16,
                   textAlign: 'center',
@@ -451,7 +452,7 @@ export default function App() {
                   <div style={{ fontSize: 13, opacity: 0.85 }}>
                     후임자에게 세션 코드를 전달하면 바로 업무를 파악할 수 있어요
                   </div>
-                </div>
+                </div>}
 
                 <HandoverDoc markdown={handoverMd} sessionId={sessionId} />
                 {/* 내보내기 버튼 */}

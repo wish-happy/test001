@@ -1,7 +1,5 @@
 nohup: ignoring input
-INFO:     Started server process [1901]
+INFO:     Started server process [39725]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
-INFO:     115.23.209.102:0 - "GET /api/baton/session/e3740ee6 HTTP/1.1" 404 Not Found
-INFO:     115.23.209.102:0 - "GET /api/baton/session/85d0b63e HTTP/1.1" 404 Not Found
