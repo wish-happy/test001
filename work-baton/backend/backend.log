@@ -1,13 +1,5 @@
 nohup: ignoring input
-INFO:     Started server process [43308]
+INFO:     Started server process [3471]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
-INFO:     115.23.209.102:0 - "POST /api/baton/demo HTTP/1.1" 200 OK
-INFO:     115.23.209.102:0 - "POST /api/baton/classify/a8a0a98c HTTP/1.1" 200 OK
-INFO:     115.23.209.102:0 - "POST /api/baton/demo HTTP/1.1" 200 OK
-INFO:     115.23.209.102:0 - "POST /api/baton/classify/3900ef59 HTTP/1.1" 200 OK
-INFO:     115.23.209.102:0 - "POST /api/baton/interview/3900ef59 HTTP/1.1" 200 OK
-INFO:     115.23.209.102:0 - "POST /api/baton/interview/3900ef59/answer HTTP/1.1" 200 OK
-INFO:     115.23.209.102:0 - "POST /api/baton/calendar/3900ef59 HTTP/1.1" 200 OK
-INFO:     115.23.209.102:0 - "POST /api/baton/handover/3900ef59 HTTP/1.1" 200 OK

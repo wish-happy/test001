@@ -9,7 +9,7 @@ const CONF = {
 
 export default function QAChatbot({ sessionId, onAsk }) {
   const [messages, setMessages] = useState([
-    { role: 'bot', text: '안녕하세요! 전임자 자료를 기반으로 질문에 답변합니다.\n업무 관련 궁금한 점을 물어보세요.' },
+    { role: 'bot', text: '안녕하세요! 전임자 자료를 기반으로 답변합니다.\n아래 추천 질문을 눌러보거나 직접 질문하세요.' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);

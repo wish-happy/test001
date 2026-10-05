@@ -164,7 +164,7 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', background: darkMode ? '#0f172a' : '#f3f4f6', color: darkMode ? '#e2e8f0' : '#1e293b', transition: 'all 0.3s' }}>
       {/* ─── 헤더 ─── */}
-      <header style={{
+      {step > 0 && <header style={{
         background: darkMode ? '#1e293b' : 'white', borderBottom: '1px solid ' + (darkMode ? '#334155' : '#e2e8f0'),
         color: darkMode ? '#e2e8f0' : '#1e293b', padding: '20px 20px 0',
       }}>
@@ -210,13 +210,14 @@ export default function App() {
           )}
 
           {step >= 3 && (
-            <div style={{ display: 'flex', gap: 2, paddingTop: 8 }}>
+            <div style={{ display: 'flex', gap: 4, paddingTop: 8, background: darkMode ? '#0f172a' : '#f8fafc', borderRadius: '12px 12px 0 0', padding: '6px 8px 0' }}>
               {visibleTabs.map((tab) => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   style={{
                     padding: '8px 14px', fontSize: 13, fontWeight: activeTab === tab.id ? 600 : 400,
-                    background: activeTab === tab.id ? (darkMode ? '#312e81' : '#eef2ff') : 'transparent',
-                    color: activeTab === tab.id ? '#4f46e5' : '#64748b',
+                    background: activeTab === tab.id ? (darkMode ? '#312e81' : 'white') : 'transparent',
+                    boxShadow: activeTab === tab.id ? '0 1px 4px rgba(0,0,0,0.06)' : 'none',
+                    color: activeTab === tab.id ? (darkMode ? '#a5b4fc' : '#4f46e5') : (darkMode ? '#94a3b8' : '#64748b'),
                     border: 'none', borderRadius: '8px 8px 0 0', cursor: 'pointer',
                   }}>
                   {tab.label}
@@ -225,7 +226,7 @@ export default function App() {
             </div>
           )}
         </div>
-      </header>
+      </header>}
 
       {/* ─── 메인 ─── */}
       <main style={{ maxWidth: 960, margin: '0 auto', padding: '20px 20px 60px' }}>
@@ -243,37 +244,110 @@ export default function App() {
 
         {/* Step 0: 역할 선택 */}
         {step === 0 && !loading && (
-          <div style={{ textAlign: 'center', paddingTop: 60 }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🏃</div>
-            <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, color: darkMode ? '#e2e8f0' : '#1e293b' }}>업무바통을 시작합니다</h2>
-            <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 40 }}>어떤 역할이신가요?</p>
-            <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div style={{ paddingTop: 40, maxWidth: 640, margin: '0 auto' }}>
+            {/* 히어로 섹션 */}
+            <div style={{ textAlign: 'center', marginBottom: 48 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 72, height: 72, borderRadius: 20, marginBottom: 20,
+                background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                boxShadow: '0 8px 24px rgba(79, 70, 229, 0.25)' }}>
+                <span style={{ fontSize: 36 }}>🏃</span>
+              </div>
+              <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 10,
+                color: darkMode ? '#f1f5f9' : '#0f172a', letterSpacing: '-0.5px' }}>
+                업무바통
+              </h2>
+              <p style={{ fontSize: 15, color: '#94a3b8', lineHeight: 1.7, marginBottom: 0 }}>
+                전임자는 전화 안 받아도 되고<br/>후임자는 전화 안 해도 되는
+              </p>
+            </div>
+
+            {/* 카드 선택 */}
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+              {/* 전임자 카드 */}
               <button onClick={() => { setRole('sender'); setStep(1); }}
-                style={{ width: 240, padding: '32px 24px', borderRadius: 16, cursor: 'pointer',
-                  background: darkMode ? '#1e293b' : 'white', border: '2px solid #e2e8f0',
-                  transition: 'all 0.2s' }}
-                onMouseOver={e => { e.currentTarget.style.borderColor = '#4f46e5'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-                onMouseOut={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-                <div style={{ fontSize: 36, marginBottom: 12 }}>📤</div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: darkMode ? '#e2e8f0' : '#1e293b', marginBottom: 8 }}>전임자</div>
-                <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6 }}>
-                  업무 폴더를 올리면<br/>AI가 인수인계서를 만들어드려요
+                style={{ width: 290, padding: 0, borderRadius: 20, cursor: 'pointer',
+                  background: darkMode ? '#1e293b' : 'white', border: 'none',
+                  boxShadow: darkMode ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.06)',
+                  transition: 'all 0.25s ease', overflow: 'hidden', textAlign: 'left' }}
+                onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(79,70,229,0.15)'; }}
+                onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = darkMode ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.06)'; }}>
+                {/* 카드 상단 그라데이션 */}
+                <div style={{ padding: '28px 24px 20px', background: 'linear-gradient(135deg, #eef2ff, #e0e7ff)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 14, background: 'white',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
+                      boxShadow: '0 2px 8px rgba(79,70,229,0.12)' }}>📤</div>
+                    <div>
+                      <div style={{ fontSize: 19, fontWeight: 800, color: '#1e293b' }}>전임자</div>
+                      <div style={{ fontSize: 11, color: '#6366f1', fontWeight: 600 }}>바통 넘기기</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.6 }}>
+                    업무 폴더만 올리면 AI가<br/>인수인계서를 자동으로 만들어요
+                  </div>
                 </div>
-                <div style={{ marginTop: 16, fontSize: 11, color: '#4f46e5', fontWeight: 600 }}>3단계면 완료 →</div>
+                {/* 카드 하단 단계 */}
+                <div style={{ padding: '16px 24px 20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {['업로드', '인터뷰', '완료'].map((s, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: '50%', fontSize: 10, fontWeight: 700,
+                          background: darkMode ? '#312e81' : '#eef2ff', color: darkMode ? '#a5b4fc' : '#4f46e5', flexShrink: 0,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i+1}</div>
+                        <span style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>{s}</span>
+                        {i < 2 && <span style={{ color: darkMode ? '#64748b' : '#cbd5e1', fontSize: 10 }}>→</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </button>
+
+              {/* 후임자 카드 */}
               <button onClick={() => { setRole('receiver'); setStep(1); }}
-                style={{ width: 240, padding: '32px 24px', borderRadius: 16, cursor: 'pointer',
-                  background: darkMode ? '#1e293b' : 'white', border: '2px solid #e2e8f0',
-                  transition: 'all 0.2s' }}
-                onMouseOver={e => { e.currentTarget.style.borderColor = '#10b981'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-                onMouseOut={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-                <div style={{ fontSize: 36, marginBottom: 12 }}>📥</div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: darkMode ? '#e2e8f0' : '#1e293b', marginBottom: 8 }}>후임자</div>
-                <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6 }}>
-                  인수인계서를 받아서<br/>업무를 파악하고 질문하세요
+                style={{ width: 290, padding: 0, borderRadius: 20, cursor: 'pointer',
+                  background: darkMode ? '#1e293b' : 'white', border: 'none',
+                  boxShadow: darkMode ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.06)',
+                  transition: 'all 0.25s ease', overflow: 'hidden', textAlign: 'left' }}
+                onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(16,185,129,0.15)'; }}
+                onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = darkMode ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.06)'; }}>
+                <div style={{ padding: '28px 24px 20px', background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 14, background: 'white',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
+                      boxShadow: '0 2px 8px rgba(16,185,129,0.12)' }}>📥</div>
+                    <div>
+                      <div style={{ fontSize: 19, fontWeight: 800, color: '#1e293b' }}>후임자</div>
+                      <div style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>바통 받기</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.6 }}>
+                    인수인계서를 받아 업무를 파악하고<br/>Q&A로 궁금한 점을 해결하세요
+                  </div>
                 </div>
-                <div style={{ marginTop: 16, fontSize: 11, color: '#10b981', fontWeight: 600 }}>내 페이스로 학습 →</div>
+                <div style={{ padding: '16px 24px 20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {['접속', '학습', 'Q&A'].map((s, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: '50%', fontSize: 10, fontWeight: 700,
+                          background: darkMode ? '#064e3b' : '#ecfdf5', color: darkMode ? '#6ee7b7' : '#10b981', flexShrink: 0,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i+1}</div>
+                        <span style={{ fontSize: 12, color: darkMode ? '#94a3b8' : '#64748b', whiteSpace: 'nowrap' }}>{s}</span>
+                        {i < 2 && <span style={{ color: darkMode ? '#64748b' : '#cbd5e1', fontSize: 10 }}>→</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </button>
+            </div>
+
+            {/* 하단 안내 */}
+            <div style={{ textAlign: 'center', marginTop: 40 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '8px 16px', borderRadius: 20,
+                background: darkMode ? '#1e293b' : '#f8fafc', fontSize: 12, color: '#94a3b8' }}>
+                <span>🤖</span> AI가 파일을 분석하고, 빈틈을 찾고, 인수인계서를 작성합니다
+              </div>
             </div>
           </div>
         )}
@@ -346,7 +420,7 @@ export default function App() {
                 {step === 3 && (
                   <div style={{ textAlign: 'center' }}>
                     <button onClick={handleInterview}
-                      style={{ padding: '12px 32px', background: '#2563eb', color: '#1e293b',
+                      style={{ padding: '12px 32px', background: '#2563eb', color: 'white',
                         border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
                       🎤 다음: AI가 빈틈을 찾아 질문합니다
                     </button>
@@ -365,6 +439,19 @@ export default function App() {
 
             {activeTab === 'handover' && handoverMd && (
               <div>
+                {/* 완료 축하 배너 */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                  borderRadius: 16, padding: 24, color: 'white', marginBottom: 16,
+                  textAlign: 'center',
+                }}>
+                  <div style={{ fontSize: 36, marginBottom: 8 }}>🎉</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 6 }}>인수인계서가 완성되었습니다!</div>
+                  <div style={{ fontSize: 13, opacity: 0.85 }}>
+                    후임자에게 세션 코드를 전달하면 바로 업무를 파악할 수 있어요
+                  </div>
+                </div>
+
                 <HandoverDoc markdown={handoverMd} sessionId={sessionId} />
                 {/* 내보내기 버튼 */}
                 <div style={{
@@ -373,7 +460,7 @@ export default function App() {
                   borderRadius: 12, border: '1px solid ' + (darkMode ? '#334155' : '#e5e7eb'),
                 }}>
                   <button onClick={() => handleExport('docx')}
-                    style={{ padding: '10px 24px', background: '#2563eb', color: '#1e293b',
+                    style={{ padding: '10px 24px', background: '#2563eb', color: 'white',
                       border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                     📄 Word(.docx) 다운로드
                   </button>
@@ -383,7 +470,7 @@ export default function App() {
                     🔗 후임자에게 전달 (코드: {sessionId})
                   </button>
                   <button onClick={() => handleExport('pdf')}
-                    style={{ padding: '10px 24px', background: '#7c3aed', color: '#1e293b',
+                    style={{ padding: '10px 24px', background: '#7c3aed', color: 'white',
                       border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                     📕 PDF 다운로드
                   </button>
