@@ -20,7 +20,7 @@ export default function WorkCalendar({ data }) {
           <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 4 }}>📌 이번 달 인계 타임라인</div>
           <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>{selectedMonth}월 주요 업무</div>
           {currentMonthEvents.length > 0 ? currentMonthEvents.map((evt, i) => (
-            <div key={i} onClick={() => setDrawer({...evt, _month: month || NOW})} style={{
+            <div key={i} onClick={() => setDrawer({...evt, _month: selectedMonth || NOW})} style={{
               display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', cursor: 'pointer',
               background: 'rgba(255,255,255,0.1)', borderRadius: 8, borderLeft: '3px solid #818cf8', marginBottom: 6,
             }}>

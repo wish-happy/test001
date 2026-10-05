@@ -379,7 +379,7 @@ async def check_handover_quality(session_id: str):
     s = sessions.get(session_id)
     if not s:
         raise HTTPException(404, "세션을 찾을 수 없습니다")
-    handover = s.get("handover_doc", "")
+    handover = s.get("handover_md", "")
     categories = s.get("categories", [])
     if not handover:
         raise HTTPException(400, "인수인계서가 아직 생성되지 않았습니다")
@@ -395,8 +395,8 @@ async def get_action_plan(session_id: str):
     s = sessions.get(session_id)
     if not s:
         raise HTTPException(404, "세션을 찾을 수 없습니다")
-    interview = s.get("interview_data", [])
-    calendar = s.get("calendar_data", {})
+    interview = s.get("coverage_reports", [])
+    calendar = s.get("calendar_events", {})
     categories = s.get("categories", [])
     llm = _get_llm()
     plan = generate_action_plan(categories, interview, calendar, llm)

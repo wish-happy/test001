@@ -4,6 +4,7 @@ File Parser — 뒤죽박죭 폴더의 다양한 파일 형식을 텍스트로 �
 """
 
 import os
+import re
 import subprocess
 import tempfile
 import zipfile
@@ -17,6 +18,13 @@ from docx import Document as DocxDocument
 from openpyxl import load_workbook
 from PyPDF2 import PdfReader
 
+
+
+def _mask_pii(text: str) -> str:
+    """개인정보 자동 마스킹"""
+    import re as _re
+    text = _re.sub(r'(\d{6})-([1-4])\d{6}', r'\1-\2******', text)
+    return text
 
 @dataclass
 class ParsedFile:

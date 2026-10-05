@@ -18,14 +18,15 @@ except ImportError:
 
 try:
     from openai import OpenAI
+    HAS_EMBED = True
+except ImportError:
+    HAS_EMBED = False
+
 try:
     from google import genai
     HAS_GENAI = True
 except ImportError:
     HAS_GENAI = False
-    HAS_EMBED = True
-except ImportError:
-    HAS_EMBED = False
 
 
 def _decode_filename(name):

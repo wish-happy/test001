@@ -23,7 +23,7 @@ export default function QAChatbot({ sessionId, onAsk }) {
     setLoading(true);
     try {
       const r = await onAsk(q);
-      setMessages(p => [...p, { role: 'bot', text: r.answer || '', sources: r.sources || [], citations: r.citations || [], confidence: r.confidence }]);
+      setMessages(p => [...p, { role: 'bot', text: r.answer || '', sources: r.sources || [], citations: r.citations || [], confidence: r.confidence, action_items: r.action_items || [] }]);
     } catch { setMessages(p => [...p, { role: 'bot', text: '오류가 발생했습니다.' }]); }
     finally { setLoading(false); }
   };
@@ -50,6 +50,16 @@ export default function QAChatbot({ sessionId, onAsk }) {
                 <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {m.sources?.map((s, j) => <span key={j} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 6, background: '#eef2ff', color: '#3730a3', border: '1px solid #c7d2fe' }}>📄 {decodeFilename(s)}</span>)}
                   {m.confidence && (() => { const c = CONF[m.confidence] || CONF.low; return <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 6, background: c.bg, color: c.color }}>신뢰도: {c.label}</span>; })()}
+                  {m.action_items?.length > 0 && (
+                    <div style={{ marginTop: 8, padding: 10, background: '#eff6ff', borderRadius: 8, border: '1px solid #bfdbfe' }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: '#1e40af', marginBottom: 6 }}>🎯 즉시 실행할 Action</div>
+                      {m.action_items.map((a, k) => (
+                        <div key={k} style={{ fontSize: 12, color: '#1e3a5f', padding: '3px 0', display: 'flex', gap: 6 }}>
+                          <span>▸</span><span>{typeof a === 'string' ? a : a.action || a.task || JSON.stringify(a)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
