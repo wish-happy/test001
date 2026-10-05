@@ -84,6 +84,13 @@ INTERVIEW_SYSTEM_PROMPT = """당신은 공공기관 인수인계 전문가입니
   ]
 }
 
+중요 - 점수 다양화:
+- 각 업무의 score는 실제 문서 충분도에 따라 반드시 다르게 매겨야 합니다
+- 모든 업무를 같은 점수로 주지 마세요. 문서가 많은 업무는 85~95, 적은 업무는 40~70
+- risk_level도 업무별 특성에 따라 High/Medium/Low를 골고루 배분하세요
+- 시행계획, 예산, 계약 관련 업무는 기한이 있으므로 risk가 높습니다
+- 단순 참고자료, 메모 위주 업무는 risk가 낮습니다
+
 질문 작성 기준:
 - 문서에서 확인되지 않은 항목만 질문
 - 전임자가 간단히 답할 수 있는 구체적 질문
@@ -116,7 +123,7 @@ class AIInterviewer:
             for f in cat.files:
                 file_contents.append({
                     "filename": f.filename,
-                    "preview": f.content[:800],
+                    "preview": f.content[:1500],
                 })
             cat_summaries.append({
                 "id": cat.id,

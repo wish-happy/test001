@@ -11,6 +11,10 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Body
 from fastapi.responses import JSONResponse
 
 from ..services.file_parser import FileParser, get_folder_summary
+from ..services.meta_extractor import extract_meta_by_regex, group_files, enrich_with_llm
+from ..services.relation_detector import detect_relations
+from ..services.quality_checker import check_quality
+from ..services.action_planner import generate_action_plan
 from ..services.classifier import AutoClassifier
 from ..services.llm_adapter import LLMAdapter, LLMConfig, MODEL_PRESETS
 from ..services.interviewer import AIInterviewer
@@ -32,6 +36,46 @@ def _get_llm(preset="gemini", api_key=None, base_url=None, model=None):
 
 
 # ─── 1. 업로드 ───
+
+# ─── 데모 모드 (원클릭) ───
+@router.post("/demo")
+async def start_demo():
+    """모의데이터로 즉시 시연"""
+    session_id = str(uuid.uuid4())[:8]
+    session_dir = UPLOAD_DIR / session_id
+    session_dir.mkdir(parents=True, exist_ok=True)
+    
+    demo_files = {
+        "업무연락처.txt": "김정훈 사무관 내선 3421 예산담당\n이수진 대리 내선 4512 보안검증\n박현우 부장 내선 2100 AI기획부장\n최영수 선임 내선 2105 AI플랫폼\n정다은 주무관 내선 1234 총무",
+        "2026년_예산편성_시행계획.txt": "1. 추진기간: 2026.05~09\n2. 6/15 부서별 요구서 제출 마감\n3. 7월 조정 협의\n4. 8월 이사회 상정\n5. 예산: AI플랫폼 500,000천원, 디지털서비스 320,000천원\n담당: 김정훈 사무관(내선 3421)",
+        "AI혁신위원회_운영규정.txt": "제1조 목적: AI 도입 심의자문\n제5조 정기회의 반기 1회\n간사: 최영수 선임(내선 2105)\n위원장: 김태호 교수\n2026.06.15 1차 회의, 2026.12.10 2차 회의",
+        "N2SF_보안검증_체크리스트.txt": "1. 접근통제 SSO 연동 완료\n2. TLS 1.3 암호화 적용\n3. 개인정보 필터링 적용\n4. 로그 6개월 보관 완료\n5. 망분리 검토중\n담당: 이수진 대리(내선 4512)\n검증일정: 2026.04~06",
+        "계약갱신_검토_시행계획.txt": "에이아이솔루션 계약 갱신 검토\n계약기간: 2026.01~12\n금액: 240,000천원\n갱신 협의: 11월\nPM: 나준혁 수석\nSLA: 가용률 99.5%",
+        "분기별_예산집행_현황.txt": "AI플랫폼 구축 500,000천원 집행률 76%\n디지털서비스 운영 320,000천원 집행률 81%\n정보보호 강화 150,000천원 집행률 80%\n합계 970,000천원",
+    }
+    
+    for name, content in demo_files.items():
+        (session_dir / name).write_text(content, encoding="utf-8")
+    
+    parser = FileParser()
+    parsed = parser.parse_folder(str(session_dir))
+    summary = get_folder_summary(parsed)
+    all_metas = []
+    try:
+        all_metas = [extract_meta_by_regex(pf.content, pf.filename) for pf in parsed]
+    except:
+        pass
+    sessions[session_id] = {"parsed_files": parsed, "summary": summary, "metas": all_metas}
+    
+    return {
+        "session_id": session_id,
+        "summary": summary,
+        "meta_extracted": len(all_metas),
+        "demo": True,
+        "files": [{"filename": pf.filename, "extension": pf.extension, "content_length": len(pf.content)} for pf in parsed],
+    }
+
+
 @router.post("/upload")
 async def upload_files(
     files: list[UploadFile] = File(...),
@@ -123,11 +167,14 @@ async def parse_files(session_id: str):
     parser = FileParser()
     parsed = parser.parse_folder(str(session_dir))
     summary = get_folder_summary(parsed)
-    sessions[session_id] = {"parsed_files": parsed, "summary": summary}
+    # 하이브리드 메타 추출 (코드 기반 — 토큰 0)
+    all_metas = [extract_meta_by_regex(pf.content, pf.filename) for pf in parsed]
+    sessions[session_id] = {"parsed_files": parsed, "summary": summary, "metas": all_metas}
 
     return {
         "session_id": session_id,
         "summary": summary,
+        "meta_extracted": len(all_metas),
         "files": [
             {"filename": pf.filename, "extension": pf.extension,
              "content_length": len(pf.content),
@@ -305,6 +352,68 @@ async def generate_handover(session_id: str):
 
 
 # ─── 6-1. 인수인계서 내보내기 ───
+
+
+# ─── 관계 탐지 (코드 기반, 토큰 0) ───
+@router.get("/relations/{session_id}")
+async def get_relations(session_id: str):
+    s = sessions.get(session_id)
+    if not s:
+        raise HTTPException(404, "세션을 찾을 수 없습니다")
+    metas = s.get("metas", [])
+    if not metas:
+        return {"relations": [], "message": "메타 데이터가 없습니다"}
+    relations = detect_relations(metas)
+    return {"relations": relations, "count": len(relations)}
+
+
+# ─── 품질 검증 ───
+@router.post("/quality/{session_id}")
+async def check_handover_quality(session_id: str):
+    s = sessions.get(session_id)
+    if not s:
+        raise HTTPException(404, "세션을 찾을 수 없습니다")
+    handover = s.get("handover_doc", "")
+    categories = s.get("categories", [])
+    if not handover:
+        raise HTTPException(400, "인수인계서가 아직 생성되지 않았습니다")
+    llm = _get_llm()
+    result = check_quality(handover, categories, llm)
+    s["quality"] = result
+    return result
+
+
+# ─── 후임자 액션플랜 ───
+@router.post("/actionplan/{session_id}")
+async def get_action_plan(session_id: str):
+    s = sessions.get(session_id)
+    if not s:
+        raise HTTPException(404, "세션을 찾을 수 없습니다")
+    interview = s.get("interview_data", [])
+    calendar = s.get("calendar_data", {})
+    categories = s.get("categories", [])
+    llm = _get_llm()
+    plan = generate_action_plan(categories, interview, calendar, llm)
+    s["action_plan"] = plan
+    return plan
+
+
+# ─── LLM 문서 요약 (그룹 배치 + 캐시) ───
+@router.post("/enrich/{session_id}")
+async def enrich_documents(session_id: str):
+    s = sessions.get(session_id)
+    if not s:
+        raise HTTPException(404, "세션을 찾을 수 없습니다")
+    parsed = s.get("parsed_files", [])
+    metas = s.get("metas", [])
+    if not parsed:
+        raise HTTPException(400, "파싱된 파일이 없습니다")
+    groups = group_files(parsed)
+    llm = _get_llm()
+    enriched = enrich_with_llm(groups, metas, llm)
+    s["enriched"] = enriched
+    return {"enriched_count": len(enriched), "groups": list(groups.keys())}
+
 @router.get("/handover/{session_id}/export")
 async def export_handover(session_id: str, format: str = "docx"):
     """인수인계서를 DOCX 또는 PDF로 내보내기"""

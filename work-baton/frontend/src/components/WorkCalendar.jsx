@@ -6,18 +6,19 @@ const NOW = new Date().getMonth() + 1;
 
 export default function WorkCalendar({ data }) {
   const [drawer, setDrawer] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(NOW);
   if (!data) return null;
   const { monthly_view } = data;
   const { monthly, always_on } = monthly_view;
   const routineEvents = always_on || [];
-  const currentMonthEvents = monthly[String(NOW)] || [];
+  const currentMonthEvents = monthly[String(selectedMonth)] || [];
 
   return (
     <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
       <div style={{ flex: '1 1 580px', minWidth: 0 }}>
         <div style={{ padding: 20, marginBottom: 20, borderRadius: 12, background: 'linear-gradient(135deg, #1e293b, #334155)', color: 'white' }}>
           <div style={{ fontSize: 13, opacity: 0.7, marginBottom: 4 }}>📌 이번 달 인계 타임라인</div>
-          <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>{NOW}월 주요 업무</div>
+          <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>{selectedMonth}월 주요 업무</div>
           {currentMonthEvents.length > 0 ? currentMonthEvents.map((evt, i) => (
             <div key={i} onClick={() => setDrawer({...evt, _month: month || NOW})} style={{
               display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', cursor: 'pointer',
@@ -42,7 +43,7 @@ export default function WorkCalendar({ data }) {
                 boxShadow: isCurrent ? '0 4px 12px rgba(79,70,229,0.15)' : 'none',
               }}>
                 <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6, color: isCurrent ? '#4f46e5' : isPast ? '#64748b' : '#475569', display: 'flex', justifyContent: 'space-between' }}>
-                  <span>{name}{isPast && ' ✓'}</span>
+                  <span style={{ cursor: 'pointer' }} onClick={() => setSelectedMonth(month)}>{name}{isPast && ' ✓'}</span>
                   {events.length > 0 && <span style={{ width: 18, height: 18, borderRadius: '50%', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: isCurrent ? '#4f46e5' : '#e2e8f0', color: isCurrent ? 'white' : '#64748b', fontWeight: 700 }}>{events.length}</span>}
                 </div>
                 {events.slice(0, 3).map((evt, j) => (
@@ -50,7 +51,7 @@ export default function WorkCalendar({ data }) {
                     {evt.day ? evt.day + '일 ' : ''}{decodeFilename(evt.title)}
                   </div>
                 ))}
-                {events.length > 3 && <div style={{ fontSize: 10, color: '#94a3b8' }}>+{events.length - 3}건</div>}
+                {events.length > 3 && <div onClick={() => setSelectedMonth(month)} style={{ fontSize: 10, color: '#6366f1', cursor: 'pointer', fontWeight: 600 }}>+{events.length - 3}건 보기</div>}
                 {events.length === 0 && <div style={{ fontSize: 11, color: '#cbd5e1', textAlign: 'center', paddingTop: 6 }}>—</div>}
               </div>
             );

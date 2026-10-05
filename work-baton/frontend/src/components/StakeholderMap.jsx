@@ -32,7 +32,7 @@ export default function StakeholderMap({ categories }) {
                   background: card.type === '외부' ? '#fef3c7' : '#eef2ff', color: card.type === '외부' ? '#92400e' : '#3730a3' }}>{card.type}</span>
               </div>
               <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, marginBottom: 10 }}>{card.description || '업무 설명 없음'}</div>
-              {card.people.length > 0 && (
+              {false && card.people.length > 0 && (
                 <div style={{ marginBottom: 8 }}>
                   <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>소관 부서 · 담당자</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
