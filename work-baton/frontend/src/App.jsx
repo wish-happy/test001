@@ -27,7 +27,8 @@ const TABS = [
 ];
 
 export default function App() {
-  const [step, setStep] = useState(1);
+  const [role, setRole] = useState(null); // 'sender' | 'receiver'
+  const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState('upload');
   const [error, setError] = useState(null);
@@ -124,7 +125,7 @@ export default function App() {
   };
 
   const handleReset = () => {
-    setStep(1); setSessionId(null); setParseResult(null);
+    setStep(0); setRole(null); setSessionId(null); setParseResult(null);
     setClassifyResult(null); setInterviewData(null);
     setCalendarData(null); setHandoverMd(null);
     setError(null); setActiveTab('graph');
@@ -155,7 +156,10 @@ export default function App() {
   ];
   const progressPercent = Math.round(progressSteps.filter(s => s.done).length / progressSteps.length * 100);
 
-  const visibleTabs = TABS.filter((t) => t.step <= step);
+  const SENDER_TABS = ['graph', 'classify', 'interview', 'handover', 'dashboard'];
+  const RECEIVER_TABS = ['handover', 'calendar', 'graph', 'chat', 'dashboard'];
+  const allowedTabs = role === 'sender' ? SENDER_TABS : role === 'receiver' ? RECEIVER_TABS : TABS.map(t => t.id);
+  const visibleTabs = TABS.filter((t) => t.step <= step && allowedTabs.includes(t.id));
 
   return (
     <div style={{ minHeight: '100vh', background: darkMode ? '#0f172a' : '#f3f4f6', color: darkMode ? '#e2e8f0' : '#1e293b', transition: 'all 0.3s' }}>
@@ -167,7 +171,13 @@ export default function App() {
         <div style={{ maxWidth: 960, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <div>
-              <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 2px' }}>🏃 업무바통</h1>
+              <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 2px' }}>🏃 업무바통
+              {role && <span style={{ fontSize: 11, marginLeft: 8, padding: '2px 8px', borderRadius: 10,
+                background: role === 'sender' ? '#eef2ff' : '#ecfdf5',
+                color: role === 'sender' ? '#4f46e5' : '#10b981' }}>
+                {role === 'sender' ? '📤 전임자' : '📥 후임자'}
+              </span>}
+            </h1>
               <p style={{ fontSize: 13, opacity: 0.8, margin: 0 }}>
                 전임자는 전화 안 받아도 되고, 후임자는 전화 안 해도 되는 AI 인수인계 도구
               </p>
@@ -231,8 +241,98 @@ export default function App() {
         {/* 단계별 로딩 */}
         {loading && <LoadingSteps phase={loadingPhase} />}
 
-        {/* Step 1 */}
-        {step === 1 && !loading && <FileUpload onUpload={handleUploadAndClassify} loading={loading} />}
+        {/* Step 0: 역할 선택 */}
+        {step === 0 && !loading && (
+          <div style={{ textAlign: 'center', paddingTop: 60 }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🏃</div>
+            <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, color: darkMode ? '#e2e8f0' : '#1e293b' }}>업무바통을 시작합니다</h2>
+            <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 40 }}>어떤 역할이신가요?</p>
+            <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button onClick={() => { setRole('sender'); setStep(1); }}
+                style={{ width: 240, padding: '32px 24px', borderRadius: 16, cursor: 'pointer',
+                  background: darkMode ? '#1e293b' : 'white', border: '2px solid #e2e8f0',
+                  transition: 'all 0.2s' }}
+                onMouseOver={e => { e.currentTarget.style.borderColor = '#4f46e5'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
+                onMouseOut={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>📤</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: darkMode ? '#e2e8f0' : '#1e293b', marginBottom: 8 }}>전임자</div>
+                <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6 }}>
+                  업무 폴더를 올리면<br/>AI가 인수인계서를 만들어드려요
+                </div>
+                <div style={{ marginTop: 16, fontSize: 11, color: '#4f46e5', fontWeight: 600 }}>3단계면 완료 →</div>
+              </button>
+              <button onClick={() => { setRole('receiver'); setStep(1); }}
+                style={{ width: 240, padding: '32px 24px', borderRadius: 16, cursor: 'pointer',
+                  background: darkMode ? '#1e293b' : 'white', border: '2px solid #e2e8f0',
+                  transition: 'all 0.2s' }}
+                onMouseOver={e => { e.currentTarget.style.borderColor = '#10b981'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
+                onMouseOut={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>📥</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: darkMode ? '#e2e8f0' : '#1e293b', marginBottom: 8 }}>후임자</div>
+                <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6 }}>
+                  인수인계서를 받아서<br/>업무를 파악하고 질문하세요
+                </div>
+                <div style={{ marginTop: 16, fontSize: 11, color: '#10b981', fontWeight: 600 }}>내 페이스로 학습 →</div>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 1: 전임자=파일업로드, 후임자=세션코드 입력 */}
+        {step === 1 && !loading && role === 'sender' && (
+          <FileUpload onUpload={handleUploadAndClassify} loading={loading} />
+        )}
+        {step === 1 && !loading && role === 'receiver' && (
+          <div style={{ maxWidth: 480, margin: '40px auto', textAlign: 'center' }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>📥</div>
+            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, color: darkMode ? '#e2e8f0' : '#1e293b' }}>
+              인수인계 세션에 접속하세요
+            </h2>
+            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 24 }}>
+              전임자에게 받은 세션 코드를 입력하세요
+            </p>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+              <input id="session-input" type="text" placeholder="세션 코드 (예: a1b2c3d4)"
+                style={{ padding: '12px 16px', borderRadius: 10, border: '2px solid ' + (darkMode ? '#475569' : '#e2e8f0'),
+                  fontSize: 15, width: 240, textAlign: 'center', background: darkMode ? '#1e293b' : 'white',
+                  color: darkMode ? '#e2e8f0' : '#1e293b' }} />
+              <button onClick={async () => {
+                const code = document.getElementById('session-input').value.trim();
+                if (!code) return alert('세션 코드를 입력하세요');
+                try {
+                  setLoading(true);
+                  const res = await fetch('/api/baton/session/' + code);
+                  if (!res.ok) throw new Error('세션을 찾을 수 없습니다');
+                  const data = await res.json();
+                  setSessionId(code);
+                  if (data.categories) { setClassifyResult(data); setStep(3); }
+                  if (data.handover_markdown) { setHandoverMd(data.handover_markdown); setStep(6); setActiveTab('handover'); }
+                  else { setStep(3); setActiveTab('graph'); }
+                } catch (e) { alert(e.message); }
+                finally { setLoading(false); }
+              }}
+                style={{ padding: '12px 24px', background: '#10b981', color: 'white',
+                  border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+                접속
+              </button>
+            </div>
+            <div style={{ marginTop: 32, padding: 16, background: darkMode ? '#1e293b' : '#f8fafc',
+              borderRadius: 12, border: '1px solid ' + (darkMode ? '#334155' : '#e2e8f0'), textAlign: 'left' }}>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8, color: darkMode ? '#e2e8f0' : '#334155' }}>💡 사용 방법</div>
+              <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.8 }}>
+                1. 전임자가 업무바통에서 인수인계를 완료하면 세션 코드가 생성돼요<br/>
+                2. 세션 코드를 입력하면 인수인계서, 캘린더, Q&A를 바로 이용할 수 있어요<br/>
+                3. 궁금한 건 Q&A 탭에서 전임자 자료를 기반으로 질문하세요
+              </div>
+            </div>
+            <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 20 }}>
+              세션 코드가 없으면? <button onClick={() => { setRole('sender'); }}
+                style={{ background: 'none', border: 'none', color: '#4f46e5', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                전임자로 먼저 시작하기
+              </button>
+            </p>
+          </div>
+        )}
 
         {/* Step 3+ */}
         {step >= 3 && !loading && (
@@ -248,7 +348,7 @@ export default function App() {
                     <button onClick={handleInterview}
                       style={{ padding: '12px 32px', background: '#2563eb', color: '#1e293b',
                         border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
-                      🎤 다음: 커버리지 분석 & 전임자 인터뷰
+                      🎤 다음: AI가 빈틈을 찾아 질문합니다
                     </button>
                   </div>
                 )}
@@ -276,6 +376,11 @@ export default function App() {
                     style={{ padding: '10px 24px', background: '#2563eb', color: '#1e293b',
                       border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                     📄 Word(.docx) 다운로드
+                  </button>
+                  <button onClick={() => { navigator.clipboard.writeText(sessionId); alert('세션 코드 복사됨: ' + sessionId); }}
+                    style={{ padding: '10px 24px', background: '#10b981', color: 'white',
+                      border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                    🔗 후임자에게 전달 (코드: {sessionId})
                   </button>
                   <button onClick={() => handleExport('pdf')}
                     style={{ padding: '10px 24px', background: '#7c3aed', color: '#1e293b',
