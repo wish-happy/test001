@@ -18,6 +18,11 @@ except ImportError:
 
 try:
     from openai import OpenAI
+try:
+    from google import genai
+    HAS_GENAI = True
+except ImportError:
+    HAS_GENAI = False
     HAS_EMBED = True
 except ImportError:
     HAS_EMBED = False
@@ -82,14 +87,12 @@ class HybridSearchEngine:
         self.embed_client = None
         self.contact_docs = []  # 연락처 문서 별도 보관
 
-        if HAS_EMBED:
-            api_key = os.getenv("GEMINI_API_KEY", "")
-            if api_key:
-                try:
-                    self.embed_client = OpenAI(api_key=api_key,
-                        base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
-                except Exception:
-                    pass
+        api_key = os.getenv("GEMINI_API_KEY", "")
+        if HAS_GENAI and api_key:
+            try:
+                self.embed_client = genai.Client(api_key=api_key)
+            except Exception:
+                self.embed_client = None
 
     def index(self, docs):
         self.docs = docs
@@ -100,13 +103,21 @@ class HybridSearchEngine:
             tokenized = [_tokenize_ko(d["content"] + " " + d["filename"]) for d in docs]
             self.bm25 = BM25Okapi(tokenized)
 
-        if self.embed_client and len(docs) <= 50:
+        if self.embed_client and len(docs) <= 300:
             try:
-                texts = [(d["filename"] + " " + d["content"])[:2000] for d in docs]
-                resp = self.embed_client.embeddings.create(model="text-embedding-005", input=texts)
-                self.embeddings = [e.embedding for e in resp.data]
+                texts = [(d["filename"] + " " + d["content"])[:1500] for d in docs]
+                self.embeddings = []
+                for i in range(0, len(texts), 20):
+                    batch = texts[i:i+20]
+                    result = self.embed_client.models.embed_content(
+                        model="gemini-embedding-001",
+                        contents=batch
+                    )
+                    self.embeddings.extend([e.values for e in result.embeddings])
+                print(f"[Embed] {len(self.embeddings)}개 문서 임베딩 완료")
             except Exception as e:
                 print(f"[Embed] {e}")
+                self.embeddings = []
 
     def search(self, query, top_k=8, include_contacts=False):
         if not self.docs: return []
@@ -124,7 +135,11 @@ class HybridSearchEngine:
         # 임베딩 (0.4)
         if self.embeddings and self.embed_client:
             try:
-                q_emb = self.embed_client.embeddings.create(model="text-embedding-005", input=[query]).data[0].embedding
+                result = self.embed_client.models.embed_content(
+                    model="gemini-embedding-001",
+                    contents=[query]
+                )
+                q_emb = result.embeddings[0].values
                 for i, de in enumerate(self.embeddings):
                     scores[i] += 0.4 * max(0, self._cos(q_emb, de))
             except Exception:
